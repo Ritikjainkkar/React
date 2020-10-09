@@ -80,7 +80,7 @@ class Contact extends Component {
     handleSubmit(event){
         console.log("current state is:"+ JSON.stringify(this.state));
         alert("current state is:"+ JSON.stringify(this.state));
-        event.preventDefault();
+        this.props.resetFeedbackForm();
     }
 
     render() {
@@ -127,7 +127,7 @@ class Contact extends Component {
                         <h3>Send us youe FeedBack</h3>
                     </div>
                     <div className='col-12 col-md-9'>
-                        <Form onSubmit={this.handleSubmit} >
+                        <Form model="feedback" onSubmit={this.handleSubmit} >
                             <FormGroup row>
                                 <Label htmlfor="firstname" md={2}>First Name</Label>
                                 <Col md={10}>

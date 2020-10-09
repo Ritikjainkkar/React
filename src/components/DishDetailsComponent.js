@@ -5,6 +5,7 @@ import { Button, Label,Modal, ModalHeader, ModalBody, Col, Row } from 'reactstra
 import { Control, LocalForm, Errors } from 'react-redux-form';
 import { addComment } from '../Redux/ActionsCreators';
 import { Loading } from './LoadingComponent';
+import { baseUrl } from '../shared/BaseUrl';
 
 const Modalfunction = (props) => {
   
@@ -89,9 +90,9 @@ const Modalfunction = (props) => {
             return(
             <div className="col-md-5 col-12 m-1">
                 <Card>
-                    <CardImg top width="100%"  src={dish.image} alt={dish.name}/>
+                    <CardImg top width="100%"  src={baseUrl + dish.image} alt={dish.name}/>
                     <CardBody>
-                        <CardTitle>{dish.name}</CardTitle>
+                        <CardTitle>dish.name}</CardTitle>
                         <CardText>{dish.description}</CardText>
                     </CardBody>
                 </Card>
@@ -102,7 +103,7 @@ const Modalfunction = (props) => {
                 )
             }
         }
-        function RenderComments({ comments}){
+        function RenderComments({ comments }){
             if (comments != null) {
                 return (
                   <div >
@@ -141,6 +142,7 @@ const Modalfunction = (props) => {
                }
         }
     const DishDetails = (props) => {
+        console.log(props);
         if (props.isLoading) {
             return(
                 <div className="container">
