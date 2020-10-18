@@ -8,8 +8,9 @@ import Contact from './ContactComponent';
 import  DishDetails   from './DishDetailsComponent';
 import About from './AboutComponent';
 import {connect} from 'react-redux';
-import { addComment , fetchDishes, fetchComments, fetchPromos, fetchLeaders} from '../Redux/ActionsCreators';
+import { postFeedback, postComment, fetchDishes, fetchComments, fetchPromos, fetchLeaders} from '../Redux/ActionsCreators';
 import { actions } from 'react-redux-form';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 const mapStateToProps = state => {
   return {
     dishes: state.dishes,
@@ -19,12 +20,13 @@ const mapStateToProps = state => {
   }
 }
  const mapDispatchToProps = dispatch => ({
-   addComment : (dishId , rating , author , comment) => dispatch(addComment(dishId,rating,author,comment)),
-   fetchDishes: () => { dispatch(fetchDishes())},
-   resetFeedbackForm: () => { dispatch(actions.reset('feedback'))},
-   fetchComments: () => { dispatch(fetchComments())},
-   fetchPromos: () => { dispatch(fetchPromos())},
-   fetchLeaders:() => {dispatch(fetchLeaders())}
+    postComment: (dishId, rating, author, comment) => dispatch(postComment(dishId, rating, author, comment)),
+    postFeedback: (feedback) => dispatch(postFeedback(feedback)),
+    fetchDishes: () => { dispatch(fetchDishes())},
+    resetFeedbackForm: () => { dispatch(actions.reset('feedback'))},
+    fetchComments: () => { dispatch(fetchComments())},
+    fetchPromos: () => { dispatch(fetchPromos())},
+    fetchLeaders:() => {dispatch(fetchLeaders())}
  })
  
 class Main extends Component{
@@ -57,14 +59,13 @@ class Main extends Component{
         }
     
         const DishWithId = ({match}) => {
-          console.log(this.props.comments);
           return(
             <DishDetails dish={this.props.dishes.dishes.filter((dish) => dish.id === parseInt(match.params.dishId,10))[0]}
             isLoading={this.props.dishes.isLoading}
             errMess={this.props.dishes.errMess}
             comments={this.props.comments.comments.filter((comment) => comment.dishId === parseInt(match.params.dishId,10))}
             commentsErrMess={this.props.comments.errMess}
-            addComment={this.props.addComment}
+            postComment={this.props.postComment}
           />
           );
         };
@@ -72,14 +73,18 @@ class Main extends Component{
         return (
           <div>
             <Header/>
-            <Switch>
-                <Route path='/home' component={HomePage}></Route>
-                <Route exact path='/menu' component={() => <Menu dishes={this.props.dishes} />} />
-                <Route path="/menu/:dishId" component={DishWithId}></Route>
-        <Route exact path='/contact' component={() => <Contact resetFeedbackForm = {this.props.resetFeedbackForm}/>}/>
-                <Route excat path='/about' component={() => <About leaders={this.props.leaders}/>}></Route>
-                <Redirect to='/home'></Redirect>
-            </Switch>
+            <TransitionGroup>
+              <CSSTransition key={this.props.location.key} classNames="page" timeout={300}>
+                <Switch>
+                    <Route path='/home' component={HomePage}></Route>
+                    <Route exact path='/menu' component={() => <Menu dishes={this.props.dishes} />} />
+                    <Route path="/menu/:dishId" component={DishWithId}></Route>
+                    <Route exact path='/contact' component={() => <Contact postFeedback={this.props.postFeedback} resetFeedbackForm = {this.props.resetFeedbackForm}/>}/>
+                    <Route excat path='/about' component={() => <About leaders={this.props.leaders}/>}></Route>
+                    <Redirect to='/home'></Redirect>
+                </Switch>
+              </CSSTransition>
+            </TransitionGroup>
           </div>
         );
       }

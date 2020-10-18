@@ -3,10 +3,10 @@ import {Card,CardImg,CardBody,CardTitle,CardText,Breadcrumb,BreadcrumbItem} from
 import { Link } from 'react-router-dom';
 import { Button, Label,Modal, ModalHeader, ModalBody, Col, Row } from 'reactstrap';
 import { Control, LocalForm, Errors } from 'react-redux-form';
-import { addComment } from '../Redux/ActionsCreators';
 import { Loading } from './LoadingComponent';
 import { baseUrl } from '../shared/BaseUrl';
-
+import { FadeTransform, Fade, Stagger } from 'react-animation-components';
+import {  } from 'react-spring';
 const Modalfunction = (props) => {
   
     const [modal, setModal] = useState(false);
@@ -16,7 +16,7 @@ const Modalfunction = (props) => {
     const maxLength = (len) => (val) => !(val) || (val.length <= len);
     const minLength = (len) => (val) => val && (val.length >= len);
     const handleSubmit = (values) => {
-        props.addComment(props.dishId ,values.rating, values.author, values.comment);
+        props.postComment(props.dishId ,values.rating, values.author, values.comment);
     }
     return (
 
@@ -89,13 +89,19 @@ const Modalfunction = (props) => {
          if (dish != null) {
             return(
             <div className="col-md-5 col-12 m-1">
-                <Card>
-                    <CardImg top width="100%"  src={baseUrl + dish.image} alt={dish.name}/>
-                    <CardBody>
-                        <CardTitle>dish.name}</CardTitle>
-                        <CardText>{dish.description}</CardText>
-                    </CardBody>
-                </Card>
+                <FadeTransform
+                    in
+                    transformProps={{
+                        exitTransform: 'scale(0.5) translateY(-50%)'
+                    }}>
+                    <Card>
+                        <CardImg top width="100%"  src={baseUrl + dish.image} alt={dish.name}/>
+                        <CardBody>
+                            <CardTitle>dish.name}</CardTitle>
+                            <CardText>{dish.description}</CardText>
+                        </CardBody>
+                    </Card>
+                </FadeTransform>
             </div>)
             }else{
                 return(
@@ -107,25 +113,29 @@ const Modalfunction = (props) => {
             if (comments != null) {
                 return (
                   <div >
-                    <h4>Comments</h4>
-                      {comments.map(comment => {
-                        return (
-                          <div in key={comment.id}>
-                            <li key={comment.id}>
-                              <p>{comment.comment}</p>
-                              <p>
-                                -- {comment.author} ,{" "}
-                                {new Intl.DateTimeFormat("en-US", {
-                                  year: "numeric",
-                                  month: "short",
-                                  day: "2-digit"
-                                }).format(new Date(Date.parse(comment.date)))}
-                              </p>
-                            </li>
-                          </div>
-                        );
-                      })}
-                  </div>
+                    <Stagger in>
+                        <h4>Comments</h4>
+                        {comments.map(comment => {
+                            return (
+                            <div in key={comment.id}>
+                                <Fade in>
+                                    <li key={comment.id}>
+                                    <p>{comment.comment}</p>
+                                    <p>
+                                        -- {comment.author} ,{" "}
+                                        {new Intl.DateTimeFormat("en-US", {
+                                        year: "numeric",
+                                        month: "short",
+                                        day: "2-digit"
+                                        }).format(new Date(Date.parse(comment.date)))}
+                                    </p>
+                                </li>
+                                </Fade>
+                            </div>
+                            );
+                        })}
+                    </Stagger>
+                    </div>
                 );
               } else return <div />;
         }
@@ -180,11 +190,11 @@ const Modalfunction = (props) => {
                             <div >
                                 <RenderComments comments = {props.comments} 
                                 dishId = {props.dish.id}
-                                addComment = {props.addComment}/>
+                                postComment = {props.postComment}/>
                             </div>
                             <div className="">
                                 <Modalfunction comments={props.comments}
-                                        addComment={props.addComment}
+                                        postComment={props.postComment}
                                         dishId={props.dish.id}/>
                             </div>
                         </div>
